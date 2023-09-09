@@ -1,6 +1,25 @@
+# compile + temp directories
+db
+incremental_db
+simulation
+output_files
+.qsys_edit
+pll_sim
+unnamed
 
-# yet to be populated
+# backup files
+*.bak
 
-*/output_files/*
-*/incremental_db/*
-*/db/*
+# random file types
+*.qws
+*.qpf
+*.qsf
+*.f
+*.bsf
+*.cmp
+*.ppf
+*.qip
+*.sip
+*.spd
+*.rpt
+*.vo
