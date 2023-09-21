@@ -6,12 +6,10 @@ use ieee.numeric_std.all;
 entity proj2_entity is
     port(
 
-        -- bit signals
-        -- reset, clk : in std_logic;
-
-        -- bit array signals
+        -- bit array inputs
         mode_selector, nibble_a, nibble_b : in std_logic_vector(3 downto 0);
 
+        -- bit array outputs
         led_result : out std_logic_vector(3 downto 0);
         led_mode_indicator : out std_logic_vector(3 downto 0)
 
@@ -32,9 +30,5 @@ begin
         nibble_b => nibble_b,
         result => led_result
     );
-        
-    -- process(clk)
-    -- begin
-    -- end process;
 
 end architecture;
