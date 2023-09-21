@@ -7,7 +7,7 @@ entity proj2_entity is
     port(
 
         -- bit signals
-        reset, clk : in std_logic;
+        -- reset, clk : in std_logic;
 
         -- bit array signals
         mode_selector, nibble_a, nibble_b : in std_logic_vector(3 downto 0);
