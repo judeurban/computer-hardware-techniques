@@ -16,7 +16,7 @@ module  pll_0002(
 
 	altera_pll #(
 		.fractional_vco_multiplier("false"),
-		.reference_clock_frequency("100.0 MHz"),
+		.reference_clock_frequency("50.0 MHz"),
 		.operation_mode("direct"),
 		.number_of_clocks(1),
 		.output_clock_frequency0("2.000000 MHz"),

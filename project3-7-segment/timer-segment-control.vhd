@@ -16,7 +16,7 @@ end entity timer_segment_control;
 architecture timer_segment_control_arch of timer_segment_control is
 
     -- build the internal counter (goes up to 2MHz value)
-    signal internal_count : INTEGER range 0 to 999_999 := 0;
+    signal internal_count : INTEGER range 0 to 1_999_999 := 0;
     signal internal_seven_seg_counter : INTEGER range 0 to 255 := 0;
     signal internal_status_led : std_logic := '0';
 
@@ -32,7 +32,7 @@ begin
             internal_count <= internal_count + 1;
             
             -- only run once per second
-            if internal_count >= 99_999 then
+            if internal_count >= 1_999_999 then
 
                 internal_count <= 0;                                            -- reset the internal counter
                 internal_seven_seg_counter <= internal_seven_seg_counter + 1;   -- increment the 7seg counter
