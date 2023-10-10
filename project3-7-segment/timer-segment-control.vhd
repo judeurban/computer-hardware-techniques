@@ -51,13 +51,12 @@ begin
             
         end if;
         
-        -- convert the bits to an integer
-        -- segment_state <= to_integer(unsigned(switch_logic));
-
         -- Reset the counter
-        -- if reset = '1' then
-        --     internal_count <= 0;
-        --     end if;
+        if reset = '0' then
+            status_led <= '0';
+            internal_count <= 0;
+            internal_seven_seg_counter <= 0;
+            end if;
 
     end process;
 
