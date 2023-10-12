@@ -50,7 +50,7 @@ begin
             when 15 =>
                 segment_output <= "0001110";    -- f
             when others =>
-                segment_output <= "1111111";    -- null
+                segment_output <= "0111111";    -- null
         end case;
 
     end process;
