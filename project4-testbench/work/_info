@@ -1,0 +1,92 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/judeu/projects/classes/2023-fall/computer-hardware-techniques/project4-testbench
+Ealu_logic
+Z1 w1698430660
+Z2 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+Z3 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z4 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+R0
+Z5 8C:\Users\judeu\projects\classes\2023-fall\computer-hardware-techniques\project4-testbench\alu-logic.vhd
+Z6 FC:\Users\judeu\projects\classes\2023-fall\computer-hardware-techniques\project4-testbench\alu-logic.vhd
+l0
+L7
+VZlE]`XaKBh0PH6AQ3iLMd1
+!s100 nBGS:>8^1=4ChPi^Fh<PO0
+Z7 OV;C;10.5b;63
+32
+Z8 !s110 1698446234
+!i10b 1
+Z9 !s108 1698446234.000000
+Z10 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:\Users\judeu\projects\classes\2023-fall\computer-hardware-techniques\project4-testbench\alu-logic.vhd|
+Z11 !s107 C:\Users\judeu\projects\classes\2023-fall\computer-hardware-techniques\project4-testbench\alu-logic.vhd|
+!i113 1
+Z12 o-work work -2002 -explicit
+Z13 tExplicit 1 CvgOpt 0
+Aalu_logic_arch
+R2
+R3
+R4
+DEx4 work 9 alu_logic 0 22 ZlE]`XaKBh0PH6AQ3iLMd1
+l32
+L15
+V;MXiECPkLI3[J4mi9o;`V2
+!s100 [g?8RS?X?O5SCc5k0h<983
+R7
+32
+R8
+!i10b 1
+R9
+R10
+R11
+!i113 1
+R12
+R13
+Ealu_logic_tb
+Z14 w1698446228
+R2
+R3
+R4
+R0
+Z15 8C:/Users/judeu/projects/classes/2023-fall/computer-hardware-techniques/project4-testbench/tb-alu-logic.vhd
+Z16 FC:/Users/judeu/projects/classes/2023-fall/computer-hardware-techniques/project4-testbench/tb-alu-logic.vhd
+l0
+L5
+VjlF@RCQcS@3FXgQV`eU4M1
+!s100 0NgBb9mY8YZN7Km?n:Okj2
+R7
+32
+R8
+!i10b 1
+R9
+Z17 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Users/judeu/projects/classes/2023-fall/computer-hardware-techniques/project4-testbench/tb-alu-logic.vhd|
+Z18 !s107 C:/Users/judeu/projects/classes/2023-fall/computer-hardware-techniques/project4-testbench/tb-alu-logic.vhd|
+!i113 1
+R12
+R13
+Aalu_logic_tb_arch
+R2
+R3
+R4
+Z19 DEx4 work 12 alu_logic_tb 0 22 jlF@RCQcS@3FXgQV`eU4M1
+l47
+L8
+VOBbc]@X:Mhd1EWl2?zY?C2
+!s100 3:z^4Q4SI]mUd_AoO5U`m3
+R7
+32
+R8
+!i10b 1
+R9
+R17
+R18
+!i113 1
+R12
+R13
