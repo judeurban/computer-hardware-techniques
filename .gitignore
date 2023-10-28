@@ -24,5 +24,10 @@ unnamed
 *.rpt
 *.vo
 
+# modelsim
+**/work/**
+*.wlf
+*.mpf
+
 # i don't think I need VSCode
 .vscode/
