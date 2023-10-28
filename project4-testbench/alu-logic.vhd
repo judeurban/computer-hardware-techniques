@@ -39,9 +39,9 @@ begin
             when NOT_A =>
                 result <= not nibble_a;
             when NOT_A_OR_NOT_B =>
-                result <= not nibble_a or not nibble_b;
+                result <= (not nibble_a) or (not nibble_b);
             when NOT_A_AND_B =>
-                result <= not nibble_a and nibble_b;
+                result <= (not nibble_a) and nibble_b;
             when LOGIC_0 =>
                 result <= "0000"; -- Constant logic 0
             when NOT_AB =>
