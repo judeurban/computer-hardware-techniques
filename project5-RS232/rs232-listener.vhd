@@ -11,9 +11,9 @@ entity RS232Listener is
 
         -- RS-232 Pins.
         -- There are more but these are the only necessary ones.
-        pin2_ReceiveData    : in std_logic := '0';         -- (RXD)    data
-        pin7_RequestToSend  : inout std_logic := '0';      -- (RTS)    control
-        pin8_ClearToSend    : inout std_logic := '0';      -- (CTS)    control
+        RxTerminal : in std_logic;  -- (RXD)    data
+        RTSIn      : in std_logic;   -- (RTS)    control
+        CTSOut     : out std_logic;  -- (CTS)    control
 
         -- buffer to populate
         RxBuffer : out std_logic_vector(7 downto 0)
@@ -28,21 +28,25 @@ architecture RS232ListenerArch of RS232Listener is
     
     -- control signals
     signal samplingIndex : INTEGER := 0;
-    signal cyclesSinceLastSample : INTEGER :=  0 ;
+    signal cyclesSinceLastSample : INTEGER :=  0;
     signal parityBitCounter : INTEGER := 1;             -- two by default to include starting bits
     signal baudPeriodInClockCycles : integer := 208;    -- 2MHz clock / 9600 default baud rate ~= 208
-    signal phaseShiftCompleted : std_logic := '0';      -- flag used to indicate if we've shifted baud sampling phase by 180deg.
-    signal phaseShiftInProgress : std_logic := '0';      -- flag used to indicate if we've shifted baud sampling phase by 180deg.
-    signal incomingBit : std_logic := '0';
+    signal phaseShiftCompleted : std_logic;             -- flag used to indicate if we've shifted baud sampling phase by 180deg.
+    signal phaseShiftInProgress : std_logic;            -- flag used to indicate if we've shifted baud sampling phase by 180deg.
+    signal incomingBit : std_logic;
     signal receivedParityBit : INTEGER := 0;
+    signal transmissionInProgress : std_logic := '0';
 
     -- local signal that allows read/write
-    signal localIncomingBuffer : std_logic_vector(11 downto 0);
+    signal localIncomingBuffer : std_logic_vector(20 downto 0);
+
+    signal halfBaudPeriod : integer; 
 
 begin
 
     -- determine the true period based on the clock cycle and baud rate
     baudPeriodInClockCycles <= clockFrequency / baudRate;
+    halfBaudPeriod <= baudPeriodInClockCycles / 2;
 
     process(referenceClock)
     begin
@@ -50,103 +54,114 @@ begin
         -- always control on a rising edge signal
         if rising_edge(referenceClock) then
 
-            -- a device wants to send us a message
-            -- or is sending us a message
-            if pin7_RequestToSend = '1' then
+            -- the sender wants to send us a message
+            -- initiate a new communicate
+            if transmissionInProgress = '0' AND RTSIn = '1' then
 
-                -- the CTS signal hasn't been raised
-                -- initate a new transmission
-                if pin8_ClearToSend = '0' then
-                    
-                    -- inform the sender that we're listening
-                    pin8_ClearToSend <= '1';
+                CTSOut <= '1';
+                transmissionInProgress <= '1';
+                report "indicating to the sender that we're listenting";
 
-                -- we've already raised a CTS flag
-                -- listen for a rising edge on the start transmission bit
-                else
+                phaseShiftCompleted <= '0';
 
-                    -- we haven't received any bits yet
-                    if phaseShiftCompleted = '0' then
-
-                        -- we just received the first bit of data
-                        -- we need to shift phase sampling by pi/2 to sample in the "middle" of the transmission
-                        if rising_edge(pin2_ReceiveData) then
-                            phaseShiftInProgress <= '1';
-                            cyclesSinceLastSample <= 0;
-                        end if;
-
-                        -- check if we should exit the phase shift
-                        if phaseShiftInProgress = '1' then
-
-                            -- we've just seen another period of the clock cycle
-                            cyclesSinceLastSample <= cyclesSinceLastSample + 1;
-
-                            -- we just reached the halfway point of transmission
-                            if cyclesSinceLastSample >= (baudPeriodInClockCycles / 2) then
-
-                                cyclesSinceLastSample <= baudPeriodInClockCycles;
-                                phaseShiftInProgress <= '0';
-                                phaseShiftCompleted <= '1';
-
-                            end if; -- reached halfway point of transmission
-
-                        end if;  -- phase shift in process
-
-                    -- phase shift has been completed. Sample the transmission
-                    else
-
-                        -- check for a valid transmission cycle
-                        if (cyclesSinceLastSample >= baudPeriodInClockCycles) then
-
-                            -- sample the value of the pin
-                            localIncomingBuffer(samplingIndex) <= pin2_ReceiveData;
-                            samplingIndex <= samplingIndex + 1;
-
-                            if incomingBit = '1' then
-                                parityBitCounter <= parityBitCounter + 1;
-                            end if;
-
-                            -- we've reached the end of transmission
-                            if samplingIndex = 12 then
-
-                                -- write the payload
-                                -- not including the parity, starting, or ending bits
-                                RxBuffer <= localIncomingBuffer(8 downto 1);
-
-                                -- get the parity bit
-                                receivedParityBit <= 0;
-                                if localIncomingBuffer(9) = '1' then
-                                    receivedParityBit <= 1;
-                                end if;
-                                
-                                if (parityBitCounter MOD 2) /= receivedParityBit then
-                                    -- TODO error hanlding of parity bit here
-                                    report "Parity bit error detected"; -- Display an error message
-                                end if;
-
-                                -- return to idle state
-                                samplingIndex <= 0;
-                                cyclesSinceLastSample <= 0;
-                                parityBitCounter <= 0;
-                                phaseShiftCompleted <= '0';
-                                phaseShiftInProgress <= '0';
-                                localIncomingBuffer <= "000000000000";
-
-                            end if;
-
-                        end if; -- valid transmission period cycle
-                            
-                        cyclesSinceLastSample <= cyclesSinceLastSample + 1;
-
-                    end if; -- phaseShiftCompleted = '0'
-
-                end if; -- pin8_ClearToSend = '0'
-                
             end if;
 
-        end if;
-    end process;
+            -- we're listening to an active transmisison
+            if transmissionInProgress = '1' then
 
+                if phaseShiftCompleted = '0' then
+
+                    -- we just received the first bit of data
+                    -- we need to shift phase sampling by pi/2 to sample in the "middle" of the transmission
+                    if rising_edge(RxTerminal) OR RxTerminal = '1' then
+                        phaseShiftInProgress <= '1';
+                        cyclesSinceLastSample <= 0;
+                        report "phase shift IP";
+                    end if;
+
+                    -- check if we should exit the phase shift
+                    if phaseShiftInProgress = '1' then
+
+                        -- we've just seen another period of the clock cycle
+                        cyclesSinceLastSample <= cyclesSinceLastSample + 1;
+
+                        -- we just reached the halfway point of transmission
+                        if cyclesSinceLastSample >= halfBaudPeriod then
+
+                            report "phase shift completed";
+                            report integer'image(halfBaudPeriod);
+
+                            -- highjack the period to immediately read next clock cycle
+                            cyclesSinceLastSample <= baudPeriodInClockCycles;
+                            phaseShiftInProgress <= '0';
+                            phaseShiftCompleted <= '1';
+
+                            -- clear the initiation flag
+                            CTSOut <= '0';
+
+                        end if; -- reached halfway point of transmission
+
+                    end if; -- phase shift in progress
+
+                -- phase shift has been completed
+                elsif phaseShiftCompleted = '1' then
+
+                    cyclesSinceLastSample <= cyclesSinceLastSample + 1;
+
+                    -- check for a valid sampling cycle
+                    if (cyclesSinceLastSample >= baudPeriodInClockCycles) then
+
+                        report "sampling at "; report integer'image(cyclesSinceLastSample);
+                        
+                        -- we're about to sample a bit
+                        cyclesSinceLastSample <= 0;
+
+                        -- sample the voltage of the pin
+                        localIncomingBuffer(samplingIndex) <= RxTerminal;
+                        samplingIndex <= samplingIndex + 1;
+
+                        if incomingBit = '1' then
+                            parityBitCounter <= parityBitCounter + 1;
+                        end if;
+
+                        -- we've reached the end of transmission
+                        if samplingIndex = 12 then
+
+                            -- write the payload
+                            -- not including the parity, starting, or ending bits
+                            RxBuffer <= localIncomingBuffer(8 downto 1);
+
+                            -- get the parity bit
+                            receivedParityBit <= 0;
+                            if localIncomingBuffer(9) = '1' then
+                                receivedParityBit <= 1;
+                            end if;
+                            
+                            if (parityBitCounter MOD 2) /= receivedParityBit then
+                                -- TODO error hanlding of parity bit here
+                                report "Parity bit error detected"; -- Display an error message
+                            end if;
+
+                            -- return to idle state
+                            samplingIndex <= 0;
+                            cyclesSinceLastSample <= 0;
+                            parityBitCounter <= 0;
+                            phaseShiftCompleted <= '0';
+                            phaseShiftInProgress <= '0';
+                            localIncomingBuffer <= (others => '0');
+                            transmissionInProgress <= '0';
+
+                        end if; -- reached end of the sampling index
+
+                    end if; -- valid transmission period cycle
+                        
+                end if; -- phase shift completed
+
+            end if; -- receiver is listening
+
+        end if; -- rising edge clock cycle
+
+    end process;
 
 end architecture ;
 
