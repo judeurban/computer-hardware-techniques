@@ -55,8 +55,6 @@ architecture RS232TestbenchArch of RS232Testbench is
         port(
             referenceClock : in std_logic;
             shouldTransmit : in std_logic;
-            baudRate : in integer := 9600;
-            clockFrequency : in integer := 2e6;
             RxTerminal : in std_logic;
             TxTerminal : out std_logic;
             RTSOut     : out std_logic;
@@ -81,8 +79,6 @@ begin
     port map(
         referenceClock     => referenceClock,
         shouldTransmit     => participantA_shouldTransmit,
-        baudRate           => baudRate,
-        clockFrequency     => clockFrequency,
         RxTerminal         => data_participantB_to_participantA,
         TxTerminal         => data_participantA_to_participantB,
         RTSOut             => RTS_participantA_to_participantB,
@@ -98,8 +94,6 @@ begin
     port map(
         referenceClock     => referenceClock,
         shouldTransmit     => participantB_shouldTransmit,
-        baudRate           => baudRate,
-        clockFrequency     => clockFrequency,
         RxTerminal         => data_participantA_to_participantB,
         TxTerminal         => data_participantB_to_participantA,
         RTSOut             => RTS_participantB_to_participantA,
@@ -125,7 +119,10 @@ begin
 
         -- drive the port for some time
         participantA_shouldTransmit <= '1';
-        wait for 10 ns;  -- Wait for transmission to occur
+        wait for 1000 ns;  -- Wait for transmission to occur
+
+        -- disable future transmission
+        participantA_shouldTransmit <= '0';
 
         wait on participantB_RxBuffer;
         

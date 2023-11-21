@@ -54,12 +54,12 @@ begin
                 if shouldTransmit = '1' then
 
                     -- ask the receiver if they're ready
-                    RTSOut <= '1';
+                    RTSOut <= '0';
                     
                 end if; -- shouldTransmit = '1'
 
                 -- CTS is high, receiver is listening
-                if CTSIn = '1' then
+                if CTSIn = '0' then
 
                     transmissionInProgress <= '1';
 
@@ -97,7 +97,7 @@ begin
                             -- lower the request flag
                             -- doing this now prevents infinite loops from the sender thinking
                             -- we're trying to send more messages after this
-                            RTSOut <= '0';
+                            RTSOut <= '1';
 
                         -- parity bit
                         when 9 =>

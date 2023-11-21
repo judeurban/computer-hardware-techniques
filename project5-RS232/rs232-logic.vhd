@@ -3,12 +3,11 @@ use ieee.std_logic_1164.all ;
 use ieee.numeric_std.all ;
 
 entity RS232Entity is
-    port (
 
+    port
+    (
         referenceClock : in std_logic;
         shouldTransmit : in std_logic;           -- a local flag that indicates transmission in progress
-        baudRate : in integer := 9600;
-        clockFrequency : in integer := 2e6;
 
         -- RS-232 Pins.
         -- There are more but these are the only necessary ones. Control and data.  
@@ -22,11 +21,14 @@ entity RS232Entity is
         -- two buffers to support Rx and Tx
         TxBuffer : in  std_logic_vector(7 downto 0);      -- switch buffer
         RxBuffer : out std_logic_vector(7 downto 0)       -- sender buffer
-
     );
+
 end RS232Entity;
     
 architecture RS232Arch of RS232Entity is
+
+    constant baudRate : integer := 9600;
+    constant clockFrequency : integer := 2e6;
         
     -- declare new components to use the logic entities
     component RS232Sender

@@ -55,10 +55,10 @@ begin
         if rising_edge(referenceClock) then
 
             -- the sender wants to send us a message
-            -- initiate a new communicate
-            if transmissionInProgress = '0' AND RTSIn = '1' then
+            -- initiate a new communicattion to inform them that we're listening
+            if transmissionInProgress = '0' AND RTSIn = '0' then
 
-                CTSOut <= '1';
+                CTSOut <= '0';
                 transmissionInProgress <= '1';
                 report "indicating to the sender that we're listenting";
 
@@ -93,7 +93,7 @@ begin
                             phaseShiftCompleted <= '1';
 
                             -- clear the initiation flag
-                            CTSOut <= '0';
+                            CTSOut <= '1';
 
                         end if; -- reached halfway point of transmission
 
