@@ -65,6 +65,7 @@ begin
 
                     -- highjack the cycles so that we immediately send the first bit when CTS goes high
                     cyclesSinceLastTransmission <= baudPeriodInClockCycles;
+                    transmissionIndex <= 0;
 
                 end if; 
 
@@ -110,28 +111,29 @@ begin
 
                         -- first ending bit
                         when 10 =>
+                        
                             TxTerminal <= END_TRANSMISSION_FLAG;
-
-                        -- second ending bit
-                        when 11 =>
 
                             -- send the final transmission (this happens to be idle state)
                             TxTerminal <= END_TRANSMISSION_FLAG;
-
+    
                             -- reset all signals to idle state
                             cyclesSinceLastTransmission <= 0;
                             transmissionIndex <= 0;
                             parityBitCounter <= 0;
                             transmissionInProgress <= '0';
-
+    
                             report "ending transmission";
+
+                        -- second ending bit
+                        -- when 11 =>
                         
                         -- transmit the payload
                         when others =>
 
                             -- -1 to account for the starting bit
                             bitToTransmit <= TxBuffer(transmissionIndex - 1);
-                            TxTerminal <= bitToTransmit;
+                            TxTerminal <= TxBuffer(transmissionIndex - 1);
 
                             -- for parity detection
                             if bitToTransmit = '1' then

@@ -76,7 +76,6 @@ begin
                     if rising_edge(RxTerminal) OR RxTerminal = '1' then
                         phaseShiftInProgress <= '1';
                         cyclesSinceLastSample <= 0;
-                        report "phase shift IP";
                     end if;
 
                     -- check if we should exit the phase shift
@@ -87,9 +86,6 @@ begin
 
                         -- we just reached the halfway point of transmission
                         if cyclesSinceLastSample >= halfBaudPeriod then
-
-                            report "phase shift completed";
-                            report integer'image(halfBaudPeriod);
 
                             -- highjack the period to immediately read next clock cycle
                             cyclesSinceLastSample <= baudPeriodInClockCycles;
@@ -111,8 +107,6 @@ begin
                     -- check for a valid sampling cycle
                     if (cyclesSinceLastSample >= baudPeriodInClockCycles) then
 
-                        report "sampling at "; report integer'image(cyclesSinceLastSample);
-                        
                         -- we're about to sample a bit
                         cyclesSinceLastSample <= 0;
 
