@@ -73,7 +73,7 @@ begin
 
                     -- we just received the first bit of data
                     -- we need to shift phase sampling by pi/2 to sample in the "middle" of the transmission
-                    if rising_edge(RxTerminal) OR RxTerminal = '1' then
+                    if RxTerminal = '1' then
                         phaseShiftInProgress <= '1';
                         cyclesSinceLastSample <= 0;
                     end if;
