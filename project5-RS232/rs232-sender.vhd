@@ -9,8 +9,8 @@ entity RS232Sender is
         -- control signals
         referenceClock : in std_logic;
         shouldTransmit : in std_logic;           -- a local flag that indicates transmission in progress
-        baudRate : in integer := 9600;
-        clockFrequency : in integer := 2e6;
+        baudRate : in integer;
+        clockFrequency : in integer;
 
         -- RS-232 Pins.
         -- There are more but these are the only necessary ones.
@@ -30,10 +30,10 @@ architecture RS232SenderArch of RS232Sender is
     constant END_TRANSMISSION_FLAG   : std_logic := '0';
     
     -- control signals
-    signal transmissionIndex           : INTEGER := 0;
-    signal cyclesSinceLastTransmission : INTEGER :=  0;
-    signal baudPeriodInClockCycles     : integer := 208;          -- 2MHz clock / 9600 default baud rate ~= 208
-    signal parityBitCounter            : INTEGER := 1;            -- two by default to include starting bits
+    signal transmissionIndex           : integer := 0;
+    signal cyclesSinceLastTransmission : integer :=  0;
+    signal baudPeriodInClockCycles     : integer := 833;    -- 2MHz clock / 2400 default baud rate ~= 833
+    signal parityBitCounter            : integer := 1;            -- two by default to include starting bits
     signal bitToTransmit               : std_logic := '0';
     signal transmissionInProgress        : std_logic := '0';
 

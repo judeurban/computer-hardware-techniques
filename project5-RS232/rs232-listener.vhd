@@ -6,8 +6,8 @@ entity RS232Listener is
     port (
 
         referenceClock : in std_logic;
-        baudRate : in integer := 9600;
-        clockFrequency : in integer := 2e6;
+        baudRate : in integer;
+        clockFrequency : in integer;
 
         -- RS-232 Pins.
         -- There are more but these are the only necessary ones.
@@ -30,7 +30,7 @@ architecture RS232ListenerArch of RS232Listener is
     signal samplingIndex : INTEGER := 0;
     signal cyclesSinceLastSample : INTEGER :=  0;
     signal parityBitCounter : INTEGER := 1;             -- two by default to include starting bits
-    signal baudPeriodInClockCycles : integer := 208;    -- 2MHz clock / 9600 default baud rate ~= 208
+    signal baudPeriodInClockCycles : integer := 833;    -- 2MHz clock / 2400 default baud rate ~= 833
     signal phaseShiftCompleted : std_logic;             -- flag used to indicate if we've shifted baud sampling phase by 180deg.
     signal phaseShiftInProgress : std_logic;            -- flag used to indicate if we've shifted baud sampling phase by 180deg.
     signal incomingBit : std_logic;

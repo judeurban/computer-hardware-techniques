@@ -27,7 +27,7 @@ end RS232Entity;
     
 architecture RS232Arch of RS232Entity is
 
-    constant baudRate : integer := 9600;
+    constant baudRate : integer := 2400;
     constant clockFrequency : integer := 2e6;
         
     -- declare new components to use the logic entities
@@ -35,8 +35,8 @@ architecture RS232Arch of RS232Entity is
         port(
             referenceClock : in std_logic;
             shouldTransmit : in std_logic;
-            baudRate : in integer := 9600;
-            clockFrequency : in integer := 2e6;
+            baudRate : in integer;
+            clockFrequency : in integer;
             TxTerminal : out std_logic;
             RTSOut     : out std_logic;
             CTSIn      : in std_logic; 
@@ -47,8 +47,8 @@ architecture RS232Arch of RS232Entity is
     component RS232Listener
         port(
             referenceClock : in std_logic;
-            baudRate : in integer := 9600;
-            clockFrequency : in integer := 2e6;
+            baudRate : in integer;
+            clockFrequency : in integer;
             RxTerminal : in std_logic;
             RTSIn      : in std_logic;
             CTSOut     : out std_logic;
