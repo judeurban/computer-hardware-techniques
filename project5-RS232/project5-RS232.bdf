@@ -2351,7 +2351,7 @@ https://fpgasoftware.intel.com/eula.
 	)
 )
 (symbol
-	(rect 1376 424 1408 472)
+	(rect 1376 408 1408 456)
 	(text "NOT" (rect 0 18 15 47)(font "Arial" (font_size 6))(vertical))
 	(text "instW8" (rect 19 -4 40 47)(font "Intel Clear" )(vertical))
 	(port
@@ -2375,21 +2375,6 @@ https://fpgasoftware.intel.com/eula.
 		(circle (rect 12 9 20 17))
 	)
 	(rotate90)
-)
-(symbol
-	(rect 1368 256 1400 272)
-	(text "VCC" (rect 7 0 36 15)(font "Arial" (font_size 6)))
-	(text "inst" (rect 3 5 28 21)(font "Arial" )(invisible))
-	(port
-		(pt 16 16)
-		(output)
-		(text "1" (rect 19 7 28 23)(font "Courier New" (bold))(invisible))
-		(text "1" (rect 19 7 28 23)(font "Courier New" (bold))(invisible))
-		(line (pt 16 16)(pt 16 8))
-	)
-	(drawing
-		(line (pt 8 8)(pt 24 8))
-	)
 )
 (symbol
 	(rect 224 -16 440 96)
@@ -2479,14 +2464,6 @@ https://fpgasoftware.intel.com/eula.
 	(flipx)
 )
 (connector
-	(pt 1296 320)
-	(pt 1368 320)
-)
-(connector
-	(pt 1368 320)
-	(pt 1368 520)
-)
-(connector
 	(pt 352 320)
 	(pt 288 320)
 )
@@ -2517,10 +2494,6 @@ https://fpgasoftware.intel.com/eula.
 (connector
 	(pt 576 352)
 	(pt 784 352)
-)
-(connector
-	(pt 1368 520)
-	(pt 784 520)
 )
 (connector
 	(pt 1072 352)
@@ -3203,20 +3176,44 @@ https://fpgasoftware.intel.com/eula.
 	(pt 816 576)
 )
 (connector
-	(pt 1392 424)
-	(pt 1392 384)
+	(pt 1296 320)
+	(pt 1336 320)
 )
 (connector
-	(pt 1392 384)
-	(pt 1400 384)
+	(pt 1336 320)
+	(pt 1336 520)
 )
 (connector
-	(pt 1384 352)
-	(pt 1384 272)
+	(pt 784 520)
+	(pt 1336 520)
 )
 (connector
 	(pt 1400 352)
-	(pt 1384 352)
+	(pt 1352 352)
+)
+(connector
+	(pt 1392 384)
+	(pt 1392 408)
+)
+(connector
+	(pt 1400 384)
+	(pt 1392 384)
+)
+(connector
+	(pt 1352 352)
+	(pt 1352 464)
+)
+(connector
+	(pt 1352 464)
+	(pt 1392 464)
+)
+(connector
+	(pt 1392 472)
+	(pt 1392 464)
+)
+(connector
+	(pt 1392 464)
+	(pt 1392 456)
 )
 (junction (pt 888 320))
 (junction (pt 888 -176))
@@ -3224,3 +3221,4 @@ https://fpgasoftware.intel.com/eula.
 (junction (pt 208 224))
 (junction (pt 320 536))
 (junction (pt 344 576))
+(junction (pt 1392 464))
