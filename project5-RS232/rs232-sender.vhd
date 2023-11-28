@@ -5,21 +5,20 @@ use ieee.numeric_std.all ;
 
 entity RS232Sender is
     port (
-
         -- control signals
         referenceClock : in std_logic;
         shouldTransmit : in std_logic;           -- a local flag that indicates transmission in progress
-        baudRate : in integer;
-        clockFrequency : in integer;
+        baudPeriodCC   : in integer;
 
-        -- RS-232 Pins.
+        -- RS-232 Pin logic.
         -- There are more but these are the only necessary ones.
         TxTerminal : out std_logic;  -- (TXD)    data
         RTSOut     : out std_logic;  -- (RTS)    control
         CTSIn      : in std_logic;   -- (CTS)    control
-
-        -- buffer to transmit
-        TxBuffer : in std_logic_vector(7 downto 0)         -- switch buffer
+        
+        -- Tx Buffer
+        TxGet        : out std_logic;
+        TxGetData    : in std_logic_vector(7 downto 0)
     );
 end RS232Sender;
 
@@ -32,15 +31,11 @@ architecture RS232SenderArch of RS232Sender is
     -- control signals
     signal transmissionIndex           : integer := 0;
     signal cyclesSinceLastTransmission : integer :=  0;
-    signal baudPeriodInClockCycles     : integer := 833;    -- 2MHz clock / 2400 default baud rate ~= 833
     signal parityBitCounter            : integer := 1;            -- two by default to include starting bits
     signal bitToTransmit               : std_logic := '0';
-    signal transmissionInProgress        : std_logic := '0';
+    signal transmissionInProgress      : std_logic := '0';
 
 begin
-
-    -- determine the true period based on the clock cycle and baud rate
-    -- baudPeriodInClockCycles <= clockFrequency / baudRate;
 
     process(referenceClock)
     begin
@@ -53,7 +48,10 @@ begin
                 -- a user just raised a flag to transmit data
                 if shouldTransmit = '1' then
 
-                    -- ask the receiver if they're ready
+                    -- read the switch array buffer for tranmission
+                    TxGet <= '1';
+
+                    -- ask the receiver if they're ready to listen
                     RTSOut <= '0';
                     
                 end if; -- shouldTransmit = '1'
@@ -64,7 +62,7 @@ begin
                     transmissionInProgress <= '1';
 
                     -- highjack the cycles so that we immediately send the first bit when CTS goes high
-                    cyclesSinceLastTransmission <= baudPeriodInClockCycles;
+                    cyclesSinceLastTransmission <= baudPeriodCC;
                     transmissionIndex <= 0;
 
                 end if; 
@@ -74,7 +72,7 @@ begin
             if transmissionInProgress = '1' then
 
                 -- ensure a valid transmission period
-                if cyclesSinceLastTransmission >= baudPeriodInClockCycles then
+                if cyclesSinceLastTransmission >= baudPeriodCC then
                     
                     -- we just transmitted a bit
                     cyclesSinceLastTransmission <= 0;
@@ -122,6 +120,7 @@ begin
                             transmissionIndex <= 0;
                             parityBitCounter <= 0;
                             transmissionInProgress <= '0';
+                            TxGet <= '0';
     
                             report "ending transmission";
 
@@ -132,8 +131,8 @@ begin
                         when others =>
 
                             -- -1 to account for the starting bit
-                            bitToTransmit <= TxBuffer(transmissionIndex - 1);
-                            TxTerminal <= TxBuffer(transmissionIndex - 1);
+                            bitToTransmit <= TxGetData(transmissionIndex - 1);
+                            TxTerminal <= TxGetData(transmissionIndex - 1);
 
                             -- for parity detection
                             if bitToTransmit = '1' then
@@ -149,15 +148,12 @@ begin
                     -- keep track of the clock cycles
                     cyclesSinceLastTransmission <= cyclesSinceLastTransmission + 1;
                     
-                end if; -- cyclesSinceLastTransmission >= baudPeriodInClockCycles, valid transmission cycle
+                end if; -- cyclesSinceLastTransmission >= baudPeriodCC, valid transmission cycle
 
             end if; -- transmission in progress
-
 
         end if; -- rising edge
 
     end process; -- referenceClock
 
-
-end architecture ;
-
+end architecture;

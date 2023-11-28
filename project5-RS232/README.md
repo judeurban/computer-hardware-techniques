@@ -216,3 +216,16 @@ def main():
     # update_displays(incoming_buffer)
 
 ```
+
+0 - start
+1 - payload0
+2 - payload1
+3 - payload2
+4 - payload3
+5 - payload4
+6 - payload5
+7 - payload6
+8 - payload7
+9 - parity bit
+10 - end0
+11 - end1

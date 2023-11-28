@@ -4,10 +4,8 @@ use ieee.numeric_std.all ;
 
 entity RS232Listener is
     port (
-
         referenceClock : in std_logic;
-        baudRate : in integer;
-        clockFrequency : in integer;
+        baudPeriodCC   : in integer;
 
         -- RS-232 Pins.
         -- There are more but these are the only necessary ones.
@@ -15,38 +13,34 @@ entity RS232Listener is
         RTSIn      : in std_logic;   -- (RTS)    control
         CTSOut     : out std_logic;  -- (CTS)    control
 
-        -- buffer to populate
-        RxBuffer : out std_logic_vector(7 downto 0)
+        RxSet       : out std_logic;
+        RxSetData   : out std_logic_vector(7 downto 0)
     );
 end RS232Listener;
     
 architecture RS232ListenerArch of RS232Listener is
         
     -- local constants
-    constant START_TRANSMISSION_FLAG : std_logic := '1';
-    constant END_TRANSMISSION_FLAG   : std_logic := '0';
+    constant TRANSMISSION_LENGTH     : integer   := 12;
+    constant PARITY_BIT_INDEX        : integer   := 9;
     
-    -- control signals
-    signal samplingIndex : INTEGER := 0;
-    signal cyclesSinceLastSample : INTEGER :=  0;
-    signal parityBitCounter : INTEGER := 1;             -- two by default to include starting bits
-    signal baudPeriodInClockCycles : integer := 833;    -- 2MHz clock / 2400 default baud rate ~= 833
-    signal phaseShiftCompleted : std_logic;             -- flag used to indicate if we've shifted baud sampling phase by 180deg.
-    signal phaseShiftInProgress : std_logic;            -- flag used to indicate if we've shifted baud sampling phase by 180deg.
-    signal incomingBit : std_logic;
-    signal receivedParityBit : INTEGER := 0;
-    signal transmissionInProgress : std_logic := '0';
-
     -- local signal that allows read/write
     signal localIncomingBuffer : std_logic_vector(20 downto 0);
 
-    signal halfBaudPeriod : integer; 
+    -- control signals
+    signal samplingIndex         : integer := 0;
+    signal cyclesSinceLastSample : integer :=  0;
+    signal halfBaudPeriod        : integer;
+    signal parityBitCounter      : integer := 1;         -- two by default to include starting bits
+    signal receivedParityBit     : integer := 0;
+    signal samplingInProgress    : std_logic := '0';
+    signal phaseShiftInProgress  : std_logic;            -- flag used to indicate if we're actively shifting baud sampling phase by 180deg.
+    signal phaseShiftCompleted   : std_logic;            -- flag used to indicate if we've shifted baud sampling phase by 180deg.
 
 begin
 
     -- determine the true period based on the clock cycle and baud rate
-    baudPeriodInClockCycles <= clockFrequency / baudRate;
-    halfBaudPeriod <= baudPeriodInClockCycles / 2;
+    halfBaudPeriod <= baudPeriodCC / 2;
 
     process(referenceClock)
     begin
@@ -56,18 +50,21 @@ begin
 
             -- the sender wants to send us a message
             -- initiate a new communicattion to inform them that we're listening
-            if transmissionInProgress = '0' AND RTSIn = '0' then
+            if samplingInProgress = '0' AND RTSIn = '0' then
 
                 CTSOut <= '0';
-                transmissionInProgress <= '1';
+                samplingInProgress <= '1';
                 report "indicating to the sender that we're listenting";
+
+                -- toggle the listener buffer
+                RxSet <= '1';
 
                 phaseShiftCompleted <= '0';
 
             end if;
 
             -- we're listening to an active transmisison
-            if transmissionInProgress = '1' then
+            if samplingInProgress = '1' then
 
                 if phaseShiftCompleted = '0' then
 
@@ -88,7 +85,7 @@ begin
                         if cyclesSinceLastSample >= halfBaudPeriod then
 
                             -- highjack the period to immediately read next clock cycle
-                            cyclesSinceLastSample <= baudPeriodInClockCycles;
+                            cyclesSinceLastSample <= baudPeriodCC;
                             phaseShiftInProgress <= '0';
                             phaseShiftCompleted <= '1';
 
@@ -105,7 +102,7 @@ begin
                     cyclesSinceLastSample <= cyclesSinceLastSample + 1;
 
                     -- check for a valid sampling cycle
-                    if (cyclesSinceLastSample >= baudPeriodInClockCycles) then
+                    if (cyclesSinceLastSample >= baudPeriodCC) then
 
                         -- we're about to sample a bit
                         cyclesSinceLastSample <= 0;
@@ -114,26 +111,26 @@ begin
                         localIncomingBuffer(samplingIndex) <= RxTerminal;
                         samplingIndex <= samplingIndex + 1;
 
-                        if incomingBit = '1' then
+                        if RxTerminal = '1' then
                             parityBitCounter <= parityBitCounter + 1;
                         end if;
 
                         -- we've reached the end of transmission
-                        if samplingIndex = 12 then
-
-                            -- write the payload
-                            -- not including the parity, starting, or ending bits
-                            RxBuffer <= localIncomingBuffer(8 downto 1);
+                        if samplingIndex = TRANSMISSION_LENGTH then
 
                             -- get the parity bit
-                            receivedParityBit <= 0;
-                            if localIncomingBuffer(9) = '1' then
+                            receivedParityBit <= 0;                     -- by default
+                            if localIncomingBuffer(PARITY_BIT_INDEX) = '1' then
                                 receivedParityBit <= 1;
                             end if;
                             
-                            if (parityBitCounter MOD 2) /= receivedParityBit then
-                                -- TODO error hanlding of parity bit here
-                                report "Parity bit error detected"; -- Display an error message
+                            -- valid transmission, write to the Rx buffer
+                            if (parityBitCounter MOD 2) = receivedParityBit then
+                                
+                                -- write the payload
+                                -- not including the parity, starting, or ending bits
+                                RxSetData <= localIncomingBuffer(8 downto 1);
+                            
                             end if;
 
                             -- return to idle state
@@ -143,7 +140,8 @@ begin
                             phaseShiftCompleted <= '0';
                             phaseShiftInProgress <= '0';
                             localIncomingBuffer <= (others => '0');
-                            transmissionInProgress <= '0';
+                            samplingInProgress <= '0';
+                            RxSet <= '0';
 
                         end if; -- reached end of the sampling index
 

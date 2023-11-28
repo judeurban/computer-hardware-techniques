@@ -12,14 +12,14 @@ entity communicationBuffer is
 
         -- getter logic
         get : in std_logic;
-        outputData : out std_logic_vector(7 downto 0);
+        getData : out std_logic_vector(7 downto 0);
 
         -- status
         isFull : out std_logic := '0'
     );
 end entity communicationBuffer;
 
-architecture communicationBuffer_arch of communicationBuffer is
+architecture communicationBufferArch of communicationBuffer is
 
     -- local buffer data
     signal bufferData : std_logic_vector(7 downto 0);
@@ -31,21 +31,19 @@ begin
     begin
 
         -- setter function is "called"
-        if set = '1' then
+        if set = '1' and get = '0' then
 
             bufferData <= setData;
             isFull <= '1';
 
-        end if;
-
         -- getter function is "called"
-        if get = '1' then
-
-            outputData <= bufferData;
+        elsif set = '0' and get = '1' then
+            
+            getData <= bufferData;
             isFull <= '0';
-
+            
         end if;
-
+            
     end process;
 
 end architecture;
