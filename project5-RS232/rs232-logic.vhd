@@ -20,12 +20,12 @@ entity RS232Entity is
 
         -- from the switch array
         TxSet        : in std_logic;
-        TxSetData    : in std_logic_vector(7 downto 0) := (others => '0');; 
+        TxSetData    : in std_logic_vector(7 downto 0) := (others => '0');
         TxIsFull     : out std_logic := '0';
 
         -- to the displays and control switches
         RxGet        : in std_logic := '0';
-        RxGetData    : out std_logic_vector(7 downto 0) := (others => '0');;
+        RxGetData    : out std_logic_vector(7 downto 0) := (others => '0');
         RxIsFull     : out std_logic := '0'
     );
 

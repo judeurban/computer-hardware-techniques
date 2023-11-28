@@ -255,27 +255,4 @@ def main():
 - **RTSIn**:      GPIO_0[18] $\rightarrow$ PIN_AF5
 - **CTSIn**:      GPIO_0[20] $\rightarrow$ PIN_AF8
 
-|                      Signal       |                       Pin         |
-|-----------------------------------|-----------------------------------|
-| GPIO_0[0]  $\rightarrow$ PIN_W15  | GPIO_0[1]  $\rightarrow$ PIN_AK2  |
-| GPIO_0[2]  $\rightarrow$ PIN_Y16  | GPIO_0[3]  $\rightarrow$ PIN_AK3  |
-| GPIO_0[4]  $\rightarrow$ PIN_AJ1  | GPIO_0[5]  $\rightarrow$ PIN_AJ2  |
-| GPIO_0[6]  $\rightarrow$ PIN_AH2  | GPIO_0[7]  $\rightarrow$ PIN_AH3  |
-| GPIO_0[8]  $\rightarrow$ PIN_AH4  | GPIO_0[9]  $\rightarrow$ PIN_AH5  |
-| 5V                                | GND                               |
-| GPIO_0[10] $\rightarrow$ PIN_AG1  | GPIO_0[11] $\rightarrow$ PIN_AG2  |
-| GPIO_0[12] $\rightarrow$ PIN_AG3  | GPIO_0[13] $\rightarrow$ PIN_AG5  |
-| GPIO_0[14] $\rightarrow$ PIN_AG6  | GPIO_0[15] $\rightarrow$ PIN_AG7  |
-| GPIO_0[16] $\rightarrow$ PIN_AG8  | GPIO_0[17] $\rightarrow$ PIN_AF4  |
-| GPIO_0[18] $\rightarrow$ PIN_AF5  | GPIO_0[19] $\rightarrow$ PIN_AF6  |
-| GPIO_0[20] $\rightarrow$ PIN_AF8  | GPIO_0[21] $\rightarrow$ PIN_AF9  |
-| GPIO_0[22] $\rightarrow$ PIN_AF10 | GPIO_0[23] $\rightarrow$ PIN_AE7  |
-| GPIO_0[24] $\rightarrow$ PIN_AE9  | GPIO_0[25] $\rightarrow$ PIN_AE11 |
-| 3.3V                              | GND                               |
-| GPIO_0[26] $\rightarrow$ PIN_AE12 | GPIO_0[27] $\rightarrow$ PIN_AD7  |
-| GPIO_0[28] $\rightarrow$ PIN_AD9  | GPIO_0[29] $\rightarrow$ PIN_AD10 |
-| GPIO_0[30] $\rightarrow$ PIN_AD11 | GPIO_0[31] $\rightarrow$ PIN_AD12 |
-| GPIO_0[32] $\rightarrow$ PIN_AC9  | GPIO_0[33] $\rightarrow$ PIN_AC12 |
-| GPIO_0[34] $\rightarrow$ PIN_AB12 | GPIO_0[35] $\rightarrow$ PIN_AA12 |
-
 Each of these pins is connected to the FPGA on the DE10-Standard board and is set to a 3.3V I/O standard.
